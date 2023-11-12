@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#191919</color>
+    <color name="white">#F6F6F6</color>
+
+    <color name="color_primary">#818CF0</color>
+    <color name="color_primary_variant">#727CD6</color>
+    <color name="color_primary_4.50">#6770BF</color>
+    <color name="images">#00EDCE</color>
+    <color name="gris_oscuro">#ABABAB</color>
+    <color name="celeste_oscuro">#236371</color>
+    <color name="gris_azulado">#E4EFFF</color>
+    <color name="transparente">#2DDEDEDE</color>
+    <color name="grey">#d2d2d2</color>
+    <color name="lilac">#D29BFD</color>
+    <color name="red">#C31306</color>
+    <color name="light_blue_50">#FFE1F5FE</color>
+    <color name="light_blue_200">#FF81D4FA</color>
+    <color name="light_blue_600">#FF039BE5</color>
+    <color name="light_blue_900">#FF01579B</color>
+
+    <color name="bg_variant">#07161B</color>
+
+    <color name="classicCar">#966847</color>
+    <color name="sportCar">#FF039BE5</color>
+    <color name="motorhomeCar">#4CB191</color>
+    <color name="flyingCar">#FFAB91</color>
+    <color name="electricCar">#C5E1A5</color>
+    <color name="pickUpCar">#AA7B59</color>
+    <color name="airPlane">#BF372D</color>
+    <color name="busCar">#FFC107</color>
+
+</resources>

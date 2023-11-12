@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_graph"
+    app:startDestination="@id/boardingOneFragment">
+
+    <fragment
+        android:id="@+id/boardingOneFragment"
+        android:name="com.kelvin.traveling.features.login.fragments.BoardingOneFragment"
+        android:label="fragment_boarding_one"
+        tools:layout="@layout/fragment_boarding_one">
+        <action
+            android:id="@+id/action_boardingOneFragment_to_boardingTwoFragment"
+            app:destination="@id/boardingTwoFragment"
+            app:enterAnim="@animator/nav_default_enter_anim"
+            app:exitAnim="@animator/nav_default_exit_anim"
+            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
+            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/boardingTwoFragment"
+        android:name="com.kelvin.traveling.features.login.fragments.BoardingTwoFragment"
+        android:label="fragment_boarding_two"
+        tools:layout="@layout/fragment_boarding_two">
+        <action
+            android:id="@+id/action_boardingTwoFragment_to_boardingOneFragment"
+            app:destination="@id/boardingOneFragment"
+            app:enterAnim="@animator/nav_default_enter_anim"
+            app:exitAnim="@animator/nav_default_exit_anim"
+            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
+            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_boardingTwoFragment_to_boardingThreeFragment"
+            app:destination="@id/boardingThreeFragment"
+            app:enterAnim="@animator/nav_default_enter_anim"
+            app:exitAnim="@animator/nav_default_exit_anim"
+            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
+            app:popExitAnim="@animator/nav_default_pop_exit_anim" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/boardingThreeFragment"
+        android:name="com.kelvin.traveling.features.login.fragments.BoardingThreeFragment"
+        android:label="fragment_boarding_three"
+        tools:layout="@layout/fragment_boarding_three">
+        <action
+            android:id="@+id/action_boardingThreeFragment_to_boardingTwoFragment"
+            app:destination="@id/boardingTwoFragment"
+            app:enterAnim="@animator/nav_default_enter_anim"
+            app:exitAnim="@animator/nav_default_exit_anim"
+            app:popEnterAnim="@animator/nav_default_pop_enter_anim"
+            app:popExitAnim="@animator/nav_default_pop_exit_anim"  />
+    </fragment>
+</navigation>
