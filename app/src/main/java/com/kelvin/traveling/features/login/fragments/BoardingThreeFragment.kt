@@ -27,15 +27,15 @@ class BoardingThreeFragment : Fragment() {
 	}
 
 	private fun listeners(){
-		goToLogInFragment = binding.btnSignin
-		goToRegisterFragment = binding.btnSignup
+		goToLogInFragment = binding.btnSignup
+		goToRegisterFragment = binding.btnSignin
 
 		goToLogInFragment.setOnClickListener {
-			//indNavController().navigate(R.id.action_boardingThreeFragment_to_logInFragment)
+			findNavController().navigate(R.id.action_boardingThreeFragment_to_BLoginFragment)
 		}
 
 		goToRegisterFragment.setOnClickListener {
-			//findNavController().navigate(R.id.action_boardingThreeFragment_to_registerFragment)
+			findNavController().navigate(R.id.action_boardingThreeFragment_to_BRegisterFragment)
 		}
 	}
 
