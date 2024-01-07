@@ -13,6 +13,7 @@ public class ItemCarViewHolder extends RecyclerView.ViewHolder {
 
     private final ItemListCarBinding binding;
     private final CarAdapter.OnCarItem listener;
+    public ItemListCarBinding bind;
 
     public ItemCarViewHolder(@NonNull ItemListCarBinding binding, CarAdapter.OnCarItem listener) {
         super(binding.getRoot());
