@@ -1,5 +1,9 @@
 package com.kelvin.traveling.features.home.domain;
 
+import androidx.annotation.DrawableRes;
+
+import com.kelvin.traveling.R;
+
 import java.util.Locale;
 
 public class Car {
@@ -29,8 +33,13 @@ public class Car {
         return isFavorite;
     }
 
-    public void setFavorite(boolean favorite) {
-        isFavorite = favorite;
+    public void toggleFavorite() {
+        isFavorite = !isFavorite;
+    }
+
+    @DrawableRes
+    public int getStarDrawable() {
+        return isFavorite ? R.drawable.ic_star : R.drawable.ic_star_border;
     }
 
     public String getNameCar() {

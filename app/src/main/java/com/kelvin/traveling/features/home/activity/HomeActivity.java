@@ -1,11 +1,14 @@
 package com.kelvin.traveling.features.home.activity;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -15,6 +18,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.Manifest;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.snackbar.Snackbar;
@@ -32,6 +36,7 @@ public class HomeActivity extends AppCompatActivity {
     private ViewPager2 viewPager2;
     private MaterialToolbar toolbar;
     private TabLayout tabLayout;
+    private static final int REQUEST_COARSE_LOCATION_PERMISSION = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +54,38 @@ public class HomeActivity extends AppCompatActivity {
         setTabLayout();
         setSupportActionBar(toolbar);
         logsInfoUser();
+        VerifyPermissions();
+    }
+
+    // Permisos de localización
+    private void VerifyPermissions() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED) {
+            // El permiso no está concedido, hay que solicitarlo
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == REQUEST_COARSE_LOCATION_PERMISSION) {
+            if (grantResults.length <= 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                showPermissionDeniedDialog();
+            } else {
+                VerifyPermissions();
+            }
+        }
+    }
+
+    public void showPermissionDeniedDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Permission Error")
+                .setMessage("This application requires location permissions to function properly. Please grant the permission in the app settings.")
+                .setPositiveButton("Ok", (dialogInterface, i) -> finishAffinity())
+                .setCancelable(false)
+                .show();
     }
 
     @Override

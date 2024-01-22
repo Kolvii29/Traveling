@@ -1,7 +1,10 @@
 package com.kelvin.traveling.features.login.fragments;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -9,7 +12,9 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
@@ -50,6 +55,8 @@ public class RegisterFragment extends Fragment {
     private AutoCompleteTextView completeInputAges;
     private String termsPrivacy;
     private boolean isAgeSelected = false;
+    private static final int CAMERA_PERMISSION_REQUEST_CODE = 1;
+    private static final int CAMERA_CAPTURE_REQUEST_CODE = 1;
     TextInputEditText username, email, password;
     DBHelper DB;
 
@@ -88,11 +95,6 @@ public class RegisterFragment extends Fragment {
             startActivity(clickTvSeeTerms);
         });
 
-        clickToCamera.setOnClickListener(v -> {
-            Intent cameraPic = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            startActivityForResult(cameraPic, 1);
-        });
-
         btn_letsStart.setOnClickListener(v -> {
             if (!isAgeSelected) {
                 mainInputAges.setError("Fill in the field");
@@ -102,9 +104,59 @@ public class RegisterFragment extends Fragment {
             registerUser();
         });
 
+        clickToCamera.setOnClickListener(view -> {
+            if (checkCameraPermission()) {
+                startCamera();
+            } else {
+                requestCameraPermission();
+            }
+        });
+
         btn_InputAges();
 
         return binding.getRoot();
+    }
+
+    // Permisos de cámara
+    private boolean checkCameraPermission() {
+        return ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) ==
+                PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestCameraPermission() {
+        ActivityCompat.requestPermissions(requireActivity(),
+                new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
+
+    }
+
+    private void startCamera() {
+        Intent cameraPic = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(cameraPic, CAMERA_CAPTURE_REQUEST_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startCamera(); // Inicia la cámara después de otorgar el permiso
+            } else {
+                Toast.makeText(requireContext(), "Camera permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == CAMERA_CAPTURE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            Bundle extras = Objects.requireNonNull(data).getExtras();
+            if (extras != null && extras.containsKey("data")) {
+                Bitmap BitPhoto = (Bitmap) extras.get("data");
+                photo_user.setImageBitmap(BitPhoto);
+            }
+        }
     }
 
     public void registerUser() {
@@ -174,18 +226,6 @@ public class RegisterFragment extends Fragment {
         dialog.show();
 
         ok_btn.setOnClickListener(v -> dialog.cancel());
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 1) {
-            Bundle extras = data.getExtras();
-            Bitmap photo = (Bitmap) Objects.requireNonNull(extras).get("data");
-            photo_user.setImageBitmap(photo);
-        }
-
     }
 
     private final TextWatcher textWatcherInputs = new TextWatcher() {

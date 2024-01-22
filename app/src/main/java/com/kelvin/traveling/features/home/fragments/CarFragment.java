@@ -17,21 +17,20 @@ import com.kelvin.traveling.features.home.domain.Car;
 
 public class CarFragment extends Fragment {
 
-    private FragmentCarBinding binding;
     private CarAdapter carAdapter;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        binding = FragmentCarBinding.inflate(getLayoutInflater());
+        com.kelvin.traveling.databinding.FragmentCarBinding binding = FragmentCarBinding.inflate(getLayoutInflater());
 
         CarAdapter adapter = new CarAdapter(RepositoryCars.getListCar(), new CarAdapter.OnCarItem() {
 
             @Override
             public void onStartClick(Car itemSelected) {
-                itemSelected.setFavorite(!itemSelected.isFavorite());
-                if (carAdapter != null){
+                itemSelected.toggleFavorite();
+                if (carAdapter != null) {
                     carAdapter.notifyDataSetChanged();
                     Toast.makeText(requireActivity(), "Coche favorito: " + itemSelected.getNameCar(), Toast.LENGTH_SHORT).show();
                 }

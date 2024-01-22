@@ -14,7 +14,7 @@ import java.util.List;
 public class CarAdapter extends RecyclerView.Adapter<ItemCarViewHolder> {
 
     private final List<Car> items;
-    private OnCarItem listener;
+    private final OnCarItem listener;
 
     public CarAdapter(List<Car> items, OnCarItem listener) {
         this.items = items;
@@ -40,6 +40,8 @@ public class CarAdapter extends RecyclerView.Adapter<ItemCarViewHolder> {
 
     public interface OnCarItem {
         void onStartClick(Car itemSelected);
+
         void onCarClick(Car itemSelected);
     }
+
 }

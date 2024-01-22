@@ -63,7 +63,7 @@
             android:elevation="30dp"
             app:layout_constraintBottom_toBottomOf="@id/itemlayout_listcar_background"
             app:layout_constraintStart_toStartOf="@id/itemlayout_listcar_name"
-            app:srcCompat="@drawable/ic_star" />
+            app:srcCompat="@drawable/ic_star_border" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
