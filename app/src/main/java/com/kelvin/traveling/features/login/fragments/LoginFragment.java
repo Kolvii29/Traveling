@@ -1,12 +1,17 @@
 package com.kelvin.traveling.features.login.fragments;
 
 import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
@@ -35,6 +40,7 @@ public class LoginFragment extends Fragment {
     private TextInputLayout mainInputPass;
     private TextInputEditText email;
     private TextInputEditText password;
+    private static final String CHANNEL_ID = "Canal";
     DBHelper DB;
     FragmentBLoginBinding binding;
 
@@ -80,6 +86,7 @@ public class LoginFragment extends Fragment {
 
 
     public void loginUser() {
+        String userUserName = Objects.requireNonNull(email.getText()).toString();
         String userEmail = Objects.requireNonNull(email.getText()).toString();
         String userPass = Objects.requireNonNull(password.getText()).toString();
 
@@ -103,9 +110,47 @@ public class LoginFragment extends Fragment {
                 NavHostFragment.findNavController(this).navigate(action);
                 Log.d("LoginFragment", "Successful Login");
 
+                showNotification(requireContext(), "Bienvenido " + userUserName, "Nos alegra verte en este paraíso.");
+
             } else {
                 showAlertDialog();
             }
+        }
+    }
+
+    // Notificaciones
+    private void showNotification(Context context, String title, String content) {
+
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        createNotificationChannel();
+
+        // Construir
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setSmallIcon(R.drawable.img_notification)
+                .setContentTitle(title)
+                .setContentText(content)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        // Mostrar
+        notificationManager.notify(1, builder.build());
+        Log.d("Notification", "Notificacion mostrada");
+
+    }
+
+    private void createNotificationChannel() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+
+            NotificationManager notificationManager = (NotificationManager) requireContext().getSystemService(Context.NOTIFICATION_SERVICE);
+
+            notificationManager.createNotificationChannel(channel);
         }
     }
 

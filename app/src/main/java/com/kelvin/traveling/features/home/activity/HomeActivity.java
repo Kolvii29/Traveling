@@ -71,7 +71,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == REQUEST_COARSE_LOCATION_PERMISSION) {
-            if (grantResults.length <= 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.length == 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 showPermissionDeniedDialog();
             } else {
                 VerifyPermissions();
@@ -161,7 +161,7 @@ public class HomeActivity extends AppCompatActivity {
 
         String userEmail = args.getEmail();
         String userPass = args.getPassword();
-        Log.d("HomeActivity", "Datos Recibidos" + userEmail + userPass);
+        Log.d("HomeActivity", "Datos Recibidos " + userEmail + userPass);
 
         String message = "Email: " + userEmail + "\nPassword: " + userPass;
         Snackbar snackbar = Snackbar.make(viewPager2, message, Snackbar.LENGTH_SHORT);
