@@ -161,7 +161,7 @@ public class HomeActivity extends AppCompatActivity {
 
         String userEmail = args.getEmail();
         String userPass = args.getPassword();
-        Log.d("HomeActivity", "Datos Recibidos " + userEmail + userPass);
+        Log.d("HomeActivity", "Datos Recibidos " + userEmail + " " + userPass);
 
         String message = "Email: " + userEmail + "\nPassword: " + userPass;
         Snackbar snackbar = Snackbar.make(viewPager2, message, Snackbar.LENGTH_SHORT);

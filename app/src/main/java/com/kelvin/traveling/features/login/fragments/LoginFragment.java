@@ -1,9 +1,15 @@
 package com.kelvin.traveling.features.login.fragments;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.Context;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -11,7 +17,9 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
@@ -30,6 +38,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.kelvin.traveling.R;
 import com.kelvin.traveling.database.DBHelper;
 import com.kelvin.traveling.databinding.FragmentBLoginBinding;
+import com.kelvin.traveling.features.home.activity.HomeActivity;
 import com.kelvin.traveling.features.login.activity.LogInActivity;
 
 import java.util.Objects;
@@ -40,9 +49,10 @@ public class LoginFragment extends Fragment {
     private TextInputLayout mainInputPass;
     private TextInputEditText email;
     private TextInputEditText password;
-    private static final String CHANNEL_ID = "Canal";
+    private String userUserName;
     DBHelper DB;
     FragmentBLoginBinding binding;
+    PendingIntent pendingIntent;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -53,13 +63,15 @@ public class LoginFragment extends Fragment {
 
         TextView snackRegisterNow = binding.tvForgetPassword;
         snackRegisterNow.setOnClickListener(v -> Snackbar.make(v, "Próximamente...", Snackbar.LENGTH_LONG).show());
-
+        getArgsRegister();
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
+        Log.d("Depurando", "Solicitud de permisos");
         listeners();
     }
 
@@ -76,17 +88,17 @@ public class LoginFragment extends Fragment {
         goToRegister.setOnClickListener(view -> Navigation.findNavController(view).navigate(R.id.action_BLoginFragment_to_BRegisterFragment));
     }
 
-    private void getArgsRegister() {
-        if (getArguments() != null) {
-            String username = getArguments().getString("username");
-            String userEmail = getArguments().getString("email");
-            String userPass = getArguments().getString("password");
+    public void getArgsRegister() {
+        Bundle extras = getArguments();
+        if (extras != null) {
+            userUserName = extras.getString("username");
+            String userEmail = extras.getString("email");
+            String userPassword = extras.getString("password");
         }
     }
 
 
     public void loginUser() {
-        String userUserName = Objects.requireNonNull(email.getText()).toString();
         String userEmail = Objects.requireNonNull(email.getText()).toString();
         String userPass = Objects.requireNonNull(password.getText()).toString();
 
@@ -100,61 +112,81 @@ public class LoginFragment extends Fragment {
 
             boolean checkUserEmailPassword = DB.checkUserEmailPassword(userEmail, userPass);
             if (checkUserEmailPassword) {
-
-                getArgsRegister();
-
-                LoginFragmentDirections.ActionBLoginFragmentToHomeActivity action =
-                        LoginFragmentDirections.actionBLoginFragmentToHomeActivity(
-                                userEmail, userPass
-                        );
-                NavHostFragment.findNavController(this).navigate(action);
                 Log.d("LoginFragment", "Successful Login");
-
-                showNotification(requireContext(), "Bienvenido " + userUserName, "Nos alegra verte en este paraíso.");
-
+                    navigateToHome(userEmail, userPass);
+                showNotification(userUserName);
             } else {
                 showAlertDialog();
             }
         }
     }
 
-    // Notificaciones
-    private void showNotification(Context context, String title, String content) {
-
-        NotificationManager notificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        createNotificationChannel();
-
-        // Construir
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.img_notification)
-                .setContentTitle(title)
-                .setContentText(content)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-        // Mostrar
-        notificationManager.notify(1, builder.build());
-        Log.d("Notification", "Notificacion mostrada");
-
+    private void navigateToHome(String userEmail, String userPass) {
+        LoginFragmentDirections.ActionBLoginFragmentToHomeActivity action =
+                LoginFragmentDirections.actionBLoginFragmentToHomeActivity(userEmail, userPass);
+        NavHostFragment.findNavController(this).navigate(action);
     }
 
-    private void createNotificationChannel() {
+    // Permisos de notificación
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
+    private void showNotification(String userUserName) {
+        Log.d("Depurando", "Estoy en showNotification " + Build.VERSION.SDK_INT);
+        if (ActivityCompat.checkSelfPermission(requireContext(), android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+            Log.i("Info", "Permiso Concedido ");
+            //Android SDK 26 o posterior:
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Log.i("Info", "Version correcta");
+                String id = "my_channel_01";
 
-            NotificationManager notificationManager = (NotificationManager) requireContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                //NotificationManager
+                NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(requireContext());
 
-            notificationManager.createNotificationChannel(channel);
+                //Canal de notificaciones
+                NotificationChannel channel = new NotificationChannel(id, "channelName", NotificationManager.IMPORTANCE_DEFAULT);
+                channel.enableVibration(true);
+
+                notificationManagerCompat.createNotificationChannel(channel);
+
+                Bitmap imgBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.img_notification);
+
+                lanzarIntentNotificacion();
+
+                NotificationCompat.Builder noBuilder = new NotificationCompat.Builder(requireContext(), id)
+                        .setSmallIcon(R.drawable.ic_home)
+                        .setContentTitle("Bienvenido " + userUserName)
+                        .setContentText("Nos alegra verte en este paraíso")
+                        .setLargeIcon(imgBitmap)
+                        .setContentIntent(pendingIntent)
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+                notificationManagerCompat.notify(1, noBuilder.build());
+
+            }
+
+        } else {
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
+            Log.d("Depurando", "Solicitud de permisos");
         }
     }
 
-    private void showAlertDialog() {
+    private void lanzarIntentNotificacion() {
+        Intent intent = new Intent(requireContext(), HomeActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(requireContext());
+        stackBuilder.addParentStack(HomeActivity.class);
+        stackBuilder.addNextIntent(intent);
+        //pendindIntent = stackBuilder.gerPendingIntent(1, PendingIntent.FLAG_UPDATE_CURRENT)
+
+        /* Para evitar error tenemos que mostrar este if, si no se repoducirá este error.
+        java.lang.IllegalArgumentException: com.example.notificaciones2: ...
+         */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            pendingIntent = PendingIntent.getActivity(
+                    requireContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE
+            );
+        }
+    }
+
+    public void showAlertDialog() {
         View alertCustomDialog = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_custom, null);
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(requireContext());
 

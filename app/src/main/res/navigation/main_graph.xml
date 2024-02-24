@@ -115,7 +115,7 @@
         android:id="@+id/homeActivity"
         android:name="com.kelvin.traveling.features.home.activity.HomeActivity"
         android:label="activity_home"
-        tools:layout="@layout/activity_home" >
+        tools:layout="@layout/activity_home">
         <argument
             android:name="email"
             app:argType="string" />
