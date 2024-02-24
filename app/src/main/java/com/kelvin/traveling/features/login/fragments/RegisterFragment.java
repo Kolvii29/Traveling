@@ -11,6 +11,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -56,9 +58,24 @@ public class RegisterFragment extends Fragment {
     private String termsPrivacy;
     private boolean isAgeSelected = false;
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 1;
-    private static final int CAMERA_CAPTURE_REQUEST_CODE = 1;
+    private ActivityResultLauncher<Intent> activityResultLauncherCamara;
     TextInputEditText username, email, password;
     DBHelper DB;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        activityResultLauncherCamara = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == -1) {
+                        Intent data = result.getData();
+                        Bundle extras = data.getExtras();
+                        Bitmap imageBitmap = (Bitmap) extras.get("data");
+                        photo_user.setImageBitmap(imageBitmap);
+                    }
+                });
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -130,8 +147,9 @@ public class RegisterFragment extends Fragment {
     }
 
     private void startCamera() {
-        Intent cameraPic = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(cameraPic, CAMERA_CAPTURE_REQUEST_CODE);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        activityResultLauncherCamara.launch(intent);
+
     }
 
     @Override
@@ -139,25 +157,13 @@ public class RegisterFragment extends Fragment {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startCamera(); // Inicia la cámara después de otorgar el permiso
+                startCamera();
             } else {
                 Toast.makeText(requireContext(), "Camera permission denied", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == CAMERA_CAPTURE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            Bundle extras = Objects.requireNonNull(data).getExtras();
-            if (extras != null && extras.containsKey("data")) {
-                Bitmap BitPhoto = (Bitmap) extras.get("data");
-                photo_user.setImageBitmap(BitPhoto);
-            }
-        }
-    }
 
     public void registerUser() {
         String userUsername = Objects.requireNonNull(username.getText()).toString().trim();
