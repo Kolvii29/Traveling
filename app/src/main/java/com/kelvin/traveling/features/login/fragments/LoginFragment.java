@@ -72,6 +72,7 @@ public class LoginFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
         Log.d("Depurando", "Solicitud de permisos");
+
         listeners();
     }
 
